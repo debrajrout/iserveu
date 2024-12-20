@@ -15,3 +15,4 @@ export async function fetchAllMatters() {
         throw new Error("Internal server error");
     }
 }
+
