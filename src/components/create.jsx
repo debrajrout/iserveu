@@ -15,7 +15,6 @@ export default function CreateAndDisplayMatters() {
     const [errorMessage, setErrorMessage] = useState("");
     const [loading, setLoading] = useState(false);
 
-    // Fetch all matters and state counts on component mount
     useEffect(() => {
         async function getMatters() {
             try {
@@ -41,12 +40,10 @@ export default function CreateAndDisplayMatters() {
         setLoading(true);
 
         try {
-            // Call the server function directly
             const result = await createMatter({ name });
             setSuccessMessage(result.message);
-            setName(""); // Clear the form after successful creation
+            setName("");
 
-            // Fetch updated matters list and state counts
             const updatedMatters = await fetchAllMatters();
             setMatters(updatedMatters.matters);
 
@@ -65,7 +62,6 @@ export default function CreateAndDisplayMatters() {
             const result = await changeMatterState({ id, newState });
             setSuccessMessage(result.message);
 
-            // Fetch updated matters list and state counts
             const updatedMatters = await fetchAllMatters();
             setMatters(updatedMatters.matters);
 
@@ -82,7 +78,6 @@ export default function CreateAndDisplayMatters() {
             const result = await deleteMatter({ id });
             setSuccessMessage(result.message);
 
-            // Fetch updated matters list and state counts
             const updatedMatters = await fetchAllMatters();
             setMatters(updatedMatters.matters);
 
@@ -95,82 +90,62 @@ export default function CreateAndDisplayMatters() {
     };
 
     return (
-        <div className="max-w-4xl mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
-            <h1 className="text-2xl font-bold text-gray-800 mb-4">Create and Display Matters</h1>
+        <div className="max-w-screen-lg mx-auto p-10">
+            <h1 className="text-4xl font-extrabold text-center mb-10 text-indigo-700">Matter Management</h1>
 
-            {/* Form to create a matter */}
-            <form onSubmit={handleSubmit} className="space-y-4 mb-8">
-                <div>
-                    <label htmlFor="name" className="block text-gray-600 font-medium mb-2">
-                        Matter Name
-                    </label>
+            <div className="bg-gray-100 p-6 rounded-lg shadow-lg">
+                <h2 className="text-2xl font-semibold mb-4 text-gray-800">Add a New Matter</h2>
+                <form onSubmit={handleSubmit} className="flex gap-4 flex-col md:flex-row items-center">
                     <input
                         type="text"
                         id="name"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder="Enter matter name"
-                        className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="flex-1 p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-indigo-500"
                         required
                     />
-                </div>
-
-                <button
-                    type="submit"
-                    className={`w-full py-3 text-white font-semibold rounded-lg ${loading
-                        ? "bg-blue-300 cursor-not-allowed"
-                        : "bg-blue-500 hover:bg-blue-600"
-                        }`}
-                    disabled={loading}
-                >
-                    {loading ? "Creating..." : "Create Matter"}
-                </button>
-            </form>
-
-            {successMessage && (
-                <p className="mt-4 text-green-600 font-medium">{successMessage}</p>
-            )}
-            {errorMessage && (
-                <p className="mt-4 text-red-600 font-medium">{errorMessage}</p>
-            )}
-
-            {/* Display state counts */}
-            <div className="mt-8">
-                <h2 className="text-xl font-bold text-gray-800 mb-4">Matter Counts</h2>
-                <div className="grid grid-cols-3 gap-4">
-                    <div className="p-4 border rounded-md shadow-md bg-gray-50 text-center">
-                        <p className="text-lg font-bold">Gas</p>
-                        <p className="text-2xl text-blue-500">{stateCounts.Gas || 0}</p>
-                    </div>
-                    <div className="p-4 border rounded-md shadow-md bg-gray-50 text-center">
-                        <p className="text-lg font-bold">Liquid</p>
-                        <p className="text-2xl text-blue-500">{stateCounts.Liquid || 0}</p>
-                    </div>
-                    <div className="p-4 border rounded-md shadow-md bg-gray-50 text-center">
-                        <p className="text-lg font-bold">Solid</p>
-                        <p className="text-2xl text-blue-500">{stateCounts.Solid || 0}</p>
-                    </div>
-                </div>
+                    <button
+                        type="submit"
+                        className={`px-6 py-3 text-white font-bold rounded-lg ${loading ? "bg-gray-400" : "bg-indigo-600 hover:bg-indigo-700"}`}
+                        disabled={loading}
+                    >
+                        {loading ? "Creating..." : "Create"}
+                    </button>
+                </form>
+                {successMessage && <p className="mt-4 text-green-500 font-medium">{successMessage}</p>}
+                {errorMessage && <p className="mt-4 text-red-500 font-medium">{errorMessage}</p>}
             </div>
 
-            {/* Display all matters */}
-            <div className="mt-8">
-                <h2 className="text-xl font-bold text-gray-800 mb-4">All Matters</h2>
+            <div className="my-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+                {Object.entries(stateCounts).map(([state, count]) => (
+                    <div
+                        key={state}
+                        className="bg-indigo-100 text-center p-6 rounded-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+                    >
+                        <p className="text-xl font-bold capitalize text-indigo-700">{state}</p>
+                        <p className="text-4xl font-extrabold text-indigo-800 mt-2">{count}</p>
+                    </div>
+                ))}
+            </div>
+
+            <div className="bg-white p-6 rounded-lg shadow-md">
+                <h2 className="text-2xl font-semibold text-gray-800 mb-6">All Matters</h2>
                 {matters.length > 0 ? (
                     <ul className="space-y-4">
                         {matters.map((matter) => (
                             <li
                                 key={matter._id}
-                                className="p-4 border rounded-md shadow-md bg-gray-50 flex justify-between items-center"
+                                className="p-4 bg-gray-50 border-l-4 border-indigo-600 rounded-lg shadow flex justify-between items-center hover:shadow-lg hover:bg-gray-100 transition-all"
                             >
                                 <div>
-                                    <span className="font-medium text-gray-700">{matter.name}</span>
-                                    <span className="ml-4 text-sm text-gray-500 italic">{matter.state}</span>
+                                    <p className="font-medium text-gray-700">{matter.name}</p>
+                                    <p className="text-sm text-gray-500 italic">State: {matter.state}</p>
                                 </div>
-                                <div className="flex space-x-4">
+                                <div className="flex gap-4">
                                     {matter.state !== "Solid" && (
                                         <select
-                                            className="p-2 border rounded-md"
+                                            className="p-2 border rounded-lg focus:ring focus:ring-indigo-500"
                                             onChange={(e) => handleChangeState(matter._id, e.target.value)}
                                             defaultValue=""
                                         >
@@ -181,7 +156,7 @@ export default function CreateAndDisplayMatters() {
                                         </select>
                                     )}
                                     <button
-                                        className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-md"
+                                        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
                                         onClick={() => handleDelete(matter._id)}
                                     >
                                         Delete
@@ -197,4 +172,3 @@ export default function CreateAndDisplayMatters() {
         </div>
     );
 }
-
